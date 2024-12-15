@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New BundleData", menuName = "Bundle Data", order = 1)]
+[CreateAssetMenu(fileName = "New BundleData", menuName = "Bundle Data", order = 2)]
 public class BundleData : ScriptableObject
 {
 

@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,36 +11,48 @@ public class FieldGenerationController : MonoBehaviour
     private GameObject paletePref;
 
     [SerializeField]
-    private BundleData[] paletBundles;
+    private List<GameObject> paletList;
 
-    private void Awake()
-    {
-        StartCoroutine(FieldGenerate(gameObject.transform, paletePref, 9));
-    }
 
-    private IEnumerator FieldGenerate(Transform _parent, GameObject _palete, Int16 count)
+    public List<GameObject> PaletList {  get { return paletList; } }
+
+
+    public IEnumerator FieldGeneration(List<int> numOfValues, BundleData paletBundles, IEnumerator paleteAnim = null, IEnumerator nextEnumerator = null)
     {
-        for (int i = 0; i < count; i++)
+
+        for (int i = 0; i < numOfValues.Count; i++)
         {
+            paletList.Add(Instantiate(paletePref, gameObject.transform));
+            paletList[i].GetComponent<PaletButton>().SetName(paletBundles.Names[numOfValues[i]]);
 
-            // create and move to ganerate palete function
-            Transform obj = Instantiate(_palete, _parent).transform.GetChild(0);
-            obj.GetComponent<SpriteRenderer>().sprite = paletBundles[0].Sprites[i];
 
-            for (int j = 0; j < paletBundles[0].NumsForRotate.Count; j++)
+            Transform icon = paletList[i].transform.GetChild(0);
+
+            icon.GetComponent<SpriteRenderer>().sprite = paletBundles.Sprites[numOfValues[i]];
+
+            for (int j = 0; j < paletBundles.NumsForRotate.Count; j++)
             {
-                if (i == paletBundles[0].NumsForRotate[j])
+                if (numOfValues[i] == paletBundles.NumsForRotate[j])
                 {
-                    obj.Rotate(new Vector3(0, 0, -90));
+                    icon.Rotate(new Vector3(0, 0, -90));
                 }
             }
 
             //obj.parent.GetComponent<Button>().onClick.AddListener(); Loose and win logic
 
-            yield return null;
+            yield return paleteAnim;
         }
+
+        yield return nextEnumerator;
     }
 
-
+    public void ClearField()
+    {
+        for (int i = 0;i < paletList.Count; i++)
+        {
+            Destroy(paletList[i]);
+        }
+        paletList.Clear();
+    }
 
 }
